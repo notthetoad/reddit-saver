@@ -7,7 +7,7 @@ from pprint import pprint
 
 def load_config():
 	with open ('config.yml', 'r') as f:
-		config = yaml.load(fp, Loader=yaml.Loader)
+		config = yaml.load(f, Loader=yaml.Loader)
 	return config
 
 
@@ -19,7 +19,7 @@ def init_reddit(client_id, client_secret, password, user_agent, username):
 											username='nYko_LoL')
 	return reddit
 
-def get_saved():
+def get_saved(reddit):
 	rows = []
 	for item in reddit.user.me().saved(limit=None):
 		if isinstance(item, praw.models.Comment):
@@ -28,10 +28,9 @@ def get_saved():
 			rows.append([item.title, item.url, item.id, item.subreddit.display_name])
 	return rows
 
-fields = ['Title', 'url', 'id', 'Subreddit']
-
 def check_file():
 	set_of_ids = set()
+	fields = ['Title', 'url', 'id', 'Subreddit']
 	if os.path.isfile('reddit_saved.csv'):
 		with open ('reddit_saved.csv', 'r') as doc:
 			reader = csv.reader(doc)
@@ -41,11 +40,20 @@ def check_file():
 		with open ('reddit_saved.csv', 'a+') as f:
 			writer = csv.writer(f)	
 			writer.writerow(fields)
+	return set_of_ids
 
-def append_to_file():
+def append_to_file(rows, set_of_ids):
 	with open ('reddit_saved.csv', 'a+') as f:
 		writer = csv.writer(f)
 		new_additions = [x for x in rows if not x[2] in set_of_ids]
 		writer.writerows(new_additions)
 	
-# Add progress bar
+def main():
+	config = load_config()
+	reddit = init_reddit(**config['reddit_config'])
+	saved = get_saved(reddit)
+	set_of_ids = check_file()
+	append_to_file(saved, set_of_ids)
+
+if __name__ == '__main__':
+	main()
