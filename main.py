@@ -12,11 +12,11 @@ def load_config():
 
 
 def init_reddit(client_id, client_secret, password, user_agent, username):
-	reddit = praw.Reddit(client_id='ttCQef6TcRoexA',
-											client_secret='6JkehdkGVCfw2QipvI5xEPOvdvhLLg',
-											password='Kyrethegod321',
-											user_agent='saved-download-to-file by u/nyko_lol',
-											username='nYko_LoL')
+	reddit = praw.Reddit(client_id=client_id,
+											client_secret=client_secret,
+											password=password,
+											user_agent=user_agent,
+											username=username)
 	return reddit
 
 def get_saved(reddit):
